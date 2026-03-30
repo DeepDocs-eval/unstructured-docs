@@ -63,6 +63,7 @@
                   "ui/sources/sharepoint",
                   "ui/sources/slack",
                   "ui/sources/snowflake",
+                  "ui/sources/teradata-sql",
                   "ui/sources/zendesk"
                 ]
               },
@@ -94,6 +95,7 @@
                   "ui/destinations/redis",
                   "ui/destinations/s3",
                   "ui/destinations/snowflake",
+                  "ui/destinations/teradata-sql",
                   "ui/destinations/weaviate"
                 ]
               },
@@ -119,6 +121,7 @@
             "pages": [
               "ui/document-elements",
               "ui/partitioning",
+              "ui/data-extractor",
               "ui/chunking",
               {
                 "group": "Enriching",
@@ -179,6 +182,7 @@
                   "api-reference/workflow/sources/sharepoint",
                   "api-reference/workflow/sources/slack",
                   "api-reference/workflow/sources/snowflake",
+                  "api-reference/workflow/sources/teradata-sql",
                   "api-reference/workflow/sources/zendesk"
                 ]
               },
@@ -210,6 +214,7 @@
                   "api-reference/workflow/destinations/redis",
                   "api-reference/workflow/destinations/s3",
                   "api-reference/workflow/destinations/snowflake",
+                  "api-reference/workflow/destinations/teradata-sql",
                   "api-reference/workflow/destinations/weaviate"
                 ]
               },
@@ -283,8 +288,7 @@
               "examplecode/codesamples/oss/table-source-connector",
               "examplecode/codesamples/oss/multi-files-api-processing",
               "examplecode/codesamples/apioss/table-extraction-from-pdf",
-              "examplecode/codesamples/api/huggingchat",
-              "examplecode/codesamples/api/mlk-research"
+              "examplecode/codesamples/api/huggingchat"
             ]
           },
           {
@@ -306,6 +310,7 @@
               "examplecode/tools/vectorshift",
               "examplecode/tools/mcp",
               "examplecode/tools/mcp-partition",
+              "examplecode/tools/ibm-orchestrate",
               "examplecode/tools/snowflake-streamlit",
               "examplecode/tools/crewai",
               "examplecode/tools/neo4j-chatbot"
@@ -319,13 +324,21 @@
           {
             "group": "Business",
             "pages": [
-              "business/overview"
+              "business/overview",
+              "business/ai-providers"
             ]
           },
           {
             "group": "Security and compliance",
             "pages": [
               "business/security-compliance/overview"
+            ]
+          },
+          {
+            "group": "IdP integration",
+            "pages": [
+              "business/idp/overview",
+              "business/idp/ui"
             ]
           },
           {
@@ -340,7 +353,8 @@
             "group": "Azure",
             "pages": [
               "business/azure/overview",
-              "business/azure/onboard"
+              "business/azure/onboard",
+              "business/azure/dns-privatelink"
             ]
           },
           {
@@ -442,6 +456,7 @@
                   "open-source/ingestion/source-connectors/slack",
                   "open-source/ingestion/source-connectors/snowflake",
                   "open-source/ingestion/source-connectors/sqlite",
+                  "open-source/ingestion/source-connectors/teradata-sql",
                   "open-source/ingestion/source-connectors/zendesk"
                 ]
               },
@@ -482,6 +497,7 @@
                   "open-source/ingestion/destination-connectors/singlestore",
                   "open-source/ingestion/destination-connectors/snowflake",
                   "open-source/ingestion/destination-connectors/sqlite",
+                  "open-source/ingestion/destination-connectors/teradata-sql",
                   "open-source/ingestion/destination-connectors/vectara",
                   "open-source/ingestion/destination-connectors/weaviate"
                 ]
@@ -534,6 +550,7 @@
               "support/request",
               "support/shared-responsibility",
               "support/status",
+              "support/access",
               {
                 "group": "Self-service",
                 "pages": [
@@ -558,7 +575,8 @@
                   "support/issues/get-authenticated-user-error",
                   "support/issues/workflow-job-in-progress",
                   "support/issues/no-fast-partitioning-for-images",
-                  "support/issues/google-drive-schema-validation"
+                  "support/issues/google-drive-schema-validation",
+                  "support/issues/email-addresses"
                 ]
               }
             ]
@@ -778,6 +796,10 @@
     {
       "source": "/enterprise/:slug*",
       "destination": "/business/:slug*"
+    },
+    {
+      "source": "/examplecode/codesamples/api/mlk-research",
+      "destination": "/examplecode/notebooks"
     },
     {
       "source": "/glossary/glossary",
