@@ -18,9 +18,8 @@ and your solution is the receiver. Some popular receiver solutions include
 
 Your solution provides a unique URL, called the 
 _webhook URL_, to receive the data that Unstructured sends. 
-Behind the scenes, when specific events happen in Unstructured, Unstructured then automatically calls the webhook URL and 
-passes to this webhook URL payloads of data in JSON format related to those events. The receiver then processes these payloads and can decide 
-what to do with the data from there.
+Behind the scenes, when specific events happen in Unstructured, Unstructured automatically calls the webhook URL and 
+sends JSON payloads related to those events. The receiver then processes the payloads and decides what to do with the data.
 
 Because webhooks are event-driven, some event must first be triggered to begin generating the related data to be sent. In 
 Unstructured, these webhooks can be triggered whenever a [job](/ui/jobs) that is associated with its target [workflow](/ui/workflows) does 
@@ -34,7 +33,7 @@ one or more of the following:
 
 You can use the Unstructured user interface (UI) to create and manage webhooks in your Unstructured personal account, or for a 
 [workspace](/ui/account/workspaces) within an Unstructured **Business** account. This allows any job that is associated with any workflow across this scope 
-to trigger the webhook. This can be useful for example for routing pager requests to a team of on-call engineers in an IT operations center 
+to trigger the webhook. This can be useful, for example, for routing pager requests to a team of on-call engineers in an IT operations center 
 whenever any job fails within the given scope.
 
 When you create a webhook in the UI, you can optionally provide a signing secret. If you do not provide one, Unstructured generates a random secret for you. You can later change the secret in the webhook settings pane, but you cannot view the existing secret value.
@@ -73,8 +72,8 @@ resource that triggers the event, do the following:
 3. Click **Add Webhook +**.
 4. In the **Webhook Setup** dialog, for **Webhook URL**, enter the target receiver's webhook URL.
 5. Optionally, for **Description**, enter a meaningful description of the webhook, for your own reference.
-6. Optionally, for **Secret** enter a signing secret.  If you don't provide one, Unstructured generates a random secret for you.
-7. For **Select Events**, click one or more of the available events that you want to Unstructured to send a notification for. 
+6. Optionally, for **Secret**, enter a signing secret. If you do not provide one, Unstructured generates a random secret for you.
+7. For **Select Events**, click one or more of the available events that you want Unstructured to send notifications for. 
    For more information about the list of available events, see this article's introductory section.
 8. Click **Save Webhook**.
 
@@ -117,9 +116,9 @@ workspace within an Unstructured **Business** account.
 You can also use the [Unstructured API](/api-reference/overview) to do this, as well as:
 
 - Create and manage webhooks at the workflow level, known as a _workflow-scoped notification channel_. This allows any job that is associated only with 
-  the target workflow to trigger the webhook. This can be useful for example for emailing a department's data analyst that a long-running job for a specific workflow 
-  has now completed, allowing them to begin working with the latest output. 
-- Create and rotate the secret for a webhook. You can optionally provide a secret when you create a webhook. If you do not provide one, Unstructured generates a random secret for you. You can also change the secret by using the API. Use the secret to verify that a webhook originated from Unstructured. If you suspect that the secret has been compromised, rotate it to a new value by using the API.
+  the target workflow to trigger the webhook. This can be useful, for example, for emailing a department's data analyst when a long-running job for a specific workflow 
+  has completed, allowing them to begin working with the latest output. 
+- Create and rotate the secret for a webhook. You can optionally provide a secret when you create a webhook. If you do not provide one, Unstructured generates a random secret for you. You can also change the secret by using the Unstructured API. Use the secret to verify that a webhook originated from Unstructured. If you suspect that the secret has been compromised, rotate it to a new value.
 - Manage notifications. Whenever a webhook is triggered, the act of Unstructured sending the event data payload is called a 
   _notification_. You can get a count or a list of these notifications. You can also mark them as read after 
   you have processed them according to your organization's needs. Marking a notification as read can help you keep track of 

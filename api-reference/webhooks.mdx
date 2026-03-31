@@ -18,9 +18,8 @@ and your solution is the receiver. Some popular receiver solutions include
 
 The receiver provides a unique URL, called the 
 _webhook URL_, to receive the data that Unstructured sends. 
-Behind the scenes, when specific events happen in Unstructured, Unstructured then automatically calls the webhook URL by using an HTTP POST operation and 
-passes payloads of data in JSON format related to those events to the receiver. The receiver then processes the payload and can decide 
-what to do with the data from there.
+Behind the scenes, when specific events happen in Unstructured, Unstructured automatically calls the webhook URL by using an HTTP POST operation and 
+passes JSON payloads related to those events to the receiver. The receiver then processes the payload and decides what to do with the data.
 
 Because webhooks are event-driven, some event must first be triggered to begin generating the related data to be sent. In 
 Unstructured, these webhooks can be triggered whenever a [job](/api-reference/workflow/jobs) that is associated with its target [workflow](/api-reference/workflow/workflows) does 
@@ -36,8 +35,8 @@ When a webhook is configured to deliver event-driven notification data payloads 
 is called a _notification channel_. For Unstructured webhooks, notification channels can be created and managed at the following levels:
 
 - At the **workspace** level, known as a _workspace-scoped notification channel_. This allows any job that is associated with a 
-  workspace in an Unstructured account to trigger the webhook. This can be useful for example for routing pager requests to a team of on-call engineers in an 
-  IT operations center whenever any job fails across the workspace.
+  workspace in an Unstructured account to trigger the webhook. This can be useful, for example, for routing pager requests to a team of on-call engineers in an 
+  IT operations center whenever a job fails across the workspace.
 
   <Note>
     Each **Let's Go** or **Pay-As-You-Go** account has one and only one workspace.
@@ -46,8 +45,8 @@ is called a _notification channel_. For Unstructured webhooks, notification chan
   </Note>
 
 - At the **workflow** level, known as a _workflow-scoped notification channel_. This allows any job that is associated only with 
-  the target workflow in an Unstructured account to trigger the webhook. This can be useful for example for emailing a department's data analyst that a long-running job for a specific workflow 
-  has now completed, allowing them to begin working with the latest output.
+  the target workflow in an Unstructured account to trigger the webhook. This can be useful, for example, for emailing a department's data analyst when a long-running job for a specific workflow 
+  has completed, allowing them to begin working with the latest output.
 
 Whenever a notification channel is created, a secret is generated for it. You can have Unstructured generate the secret value, or you can specify the value yourself. Use this secret in your receiver application to verify incoming webhook requests. The secret is write-only and is not returned by the API after creation. If you suspect that the secret has been compromised, rotate it to a new value.
 
@@ -97,7 +96,7 @@ you have processed them according to your organization's needs. Marking a notifi
 which notifications you have already dealt with and which ones you still need to take action on.
 
 <Info>
-  The Unstructured user interface (UI) allows limited creation, viewing, and managing of webhooks only, as follows ([learn how](/ui/webhooks)):
+  The Unstructured user interface (UI) allows only limited creation, viewing, and management of webhooks, as follows ([learn how](/ui/webhooks)):
 
   - Webhooks for a personal Unstructured workspace. Each personal Unstructured account has one and only one personal Unstructured workspace.
   - Webhooks for a workspace within an Unstructured **Business** account.
@@ -151,7 +150,7 @@ In the following examples, replace the following placeholders:
   events to be triggered, add multiple `<event-type>` entries. For the list of 
   available event types, see this article's introductory section.
 - Replace `<description>` with some meaningful description of the notification channel, for your own reference.
-- Optionally, replace `<secret>` with the signing secret in plain text for the notification channel. If you do not provide a secret, Unstructured generates a random secret for you. The secret must be between 24 and 75 bytes. If you use only ASCII characters, this is equivalent to 24 to 75 characters, because each ASCII character is one byte.
+- Optionally, replace `<secret>` with the signing secret in plain text for the notification channel. If you do not provide a secret, Unstructured generates a random secret for you. The secret must be between 24 and 75 bytes (24 to 75 ASCII characters).
 
 <Warning>
   The secret is write-only and is not returned by the API after creation. If you need to change it later, update it or [rotate this workspace-scoped notification channel's secret](#rotate-the-secret-for-a-workspace-scoped-notification-channel).
@@ -321,7 +320,7 @@ In the following examples, replace the following placeholders:
     events to be triggered, add multiple `<event-type>` entries. For the list of 
     available event types, see this article's introductory section.
   - `<description>`: Some meaningful description of the notification channel, for your own reference.
-  - `<secret>`: A new signing secret in plain text for the notification channel. Omit `secret` to keep the current value. The secret must be between 24 and 75 bytes. If you use only ASCII characters, this is equivalent to 24 to 75 characters, because each ASCII character is one byte.  
+  - `<secret>`: A new signing secret in plain text for the notification channel. Omit `secret` to keep the current value. The secret must be between 24 and 75 bytes (24 to 75 ASCII characters).  
   - For `enabled`: Set to true to enable the notification channel, or false to disable it.
 
 <AccordionGroup>
@@ -425,7 +424,7 @@ In the following examples, replace the following placeholders:
   events to be triggered, add multiple `<event-type>` entries. For the list of 
   available event types, see this article's introductory section.
 - Replace `<description>` with some meaningful description of the notification channel, for your own reference.
-- Optionally, replace `<secret>` with the signing secret in plain text for the notification channel. If you do not provide a secret, Unstructured generates a random secret for you. The secret must be between 24 and 75 bytes. If you use only ASCII characters, this is equivalent to 24 to 75 characters, because each ASCII character is one byte.
+- Optionally, replace `<secret>` with the signing secret in plain text for the notification channel. If you do not provide a secret, Unstructured generates a random secret for you. The secret must be between 24 and 75 bytes (24 to 75 ASCII characters).
 
 <Warning>
   The secret is write-only and is not returned by the API after creation. If you need to change it later, update it or [rotate this workflow-scoped notification channel's secret](#rotate-the-secret-for-a-workflow-scoped-notification-channel).
@@ -527,7 +526,7 @@ In the following examples, replace the following placeholders:
 
 - Replace `<workflow-id>` with the workflow's unique ID. 
   To get this ID, see [List workflows](/api-reference/workflow/overview#list-workflows).
-- Replace`<channel-id>` with the workspace-scoped notification channel's unique ID. 
+- Replace `<channel-id>` with the workspace-scoped notification channel's unique ID. 
   To get this ID, see [List all workflow-scoped notification channels](#list-all-workflow-scoped-notification-channels).
 
 <AccordionGroup>
@@ -563,7 +562,7 @@ In the following examples, replace the following placeholders:
 
 - Replace `<workflow-id>` with the workflow's unique ID. 
   To get this ID, see [List workflows](/api-reference/workflow/overview#list-workflows).
-- Replace`<channel-id>` with the workspace-scoped notification channel's unique ID. 
+- Replace `<channel-id>` with the workspace-scoped notification channel's unique ID. 
   To get this ID, see [List all workflow-scoped notification channels](#list-all-workflow-scoped-notification-channels).
 
 <AccordionGroup>
@@ -599,7 +598,7 @@ In the following examples, replace the following placeholders:
 
 - Replace `<workflow-id>` with the workflow's unique ID. 
   To get this ID, see [List workflows](/api-reference/workflow/overview#list-workflows).
-- Replace`<channel-id>` with the workspace-scoped notification channel's unique ID. 
+- Replace `<channel-id>` with the workspace-scoped notification channel's unique ID. 
   To get this ID, see [List all workflow-scoped notification channels](#list-all-workflow-scoped-notification-channels).
 - Replace any or all of the following settings with the new settings you want to use for the notification channel:
 
@@ -608,7 +607,7 @@ In the following examples, replace the following placeholders:
     events to be triggered, add multiple `<event-type>` entries. For the list of 
     available event types, see this article's introductory section.
   - `<description>`: Some meaningful description of the notification channel, for your own reference.
-  - `<secret>`: A new signing secret in plain text for the notification channel. Omit `secret` to keep the current value. The secret must be between 24 and 75 bytes. If you use only ASCII characters, this is equivalent to 24 to 75 characters, because each ASCII character is one byte.
+  - `<secret>`: A new signing secret in plain text for the notification channel. Omit `secret` to keep the current value. The secret must be between 24 and 75 bytes (24 to 75 ASCII characters).
   - For `enabled`: Set to true to enable the notification channel, or false to disable it.
 
 <AccordionGroup>
@@ -675,7 +674,7 @@ In the following examples, replace the following placeholders:
 
 - Replace `<workflow-id>` with the workflow's unique ID. 
   To get this ID, see [List workflows](/api-reference/workflow/overview#list-workflows).
-- Replace`<channel-id>` with the workflow-scoped notification channel's unique ID. 
+- Replace `<channel-id>` with the workflow-scoped notification channel's unique ID. 
   To get this ID, see [List all workflow-scoped notification channels](#list-all-workflow-scoped-notification-channels).
 
 <AccordionGroup>
@@ -820,7 +819,7 @@ This results in the following behaviors:
            - **Key**: `unstructured-api-key`, **Value**: `{{UNSTRUCTURED_API_KEY}}`
            - **Key**: `accept`, **Value**: `application/json`
 
-        4. On the **Body** tab, select **raw** and **JSON**, and specify the settings for the notification channel:
+        4. On the **Body** tab, select **raw** and **JSON**, and specify the settings for marking notifications as read:
 
             ```json
             {
