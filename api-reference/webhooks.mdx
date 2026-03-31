@@ -49,10 +49,47 @@ is called a _notification channel_. For Unstructured webhooks, notification chan
   the target workflow in an Unstructured account to trigger the webhook. This can be useful for example for emailing a department's data analyst that a long-running job for a specific workflow 
   has now completed, allowing them to begin working with the latest output.
 
-Whenever a notification channel is created, a secret is generated for it. You can have Unstructured generate this secret's value for you, 
-or you can specify this secret's value yourself. You can get this secret's value and then [verify this secret](https://docs.svix.com/receiving/verifying-payloads/how) 
-to check whether the notification channel's webhook originated from Unstructured. If you suspect that the original secret was somehow 
-compromised, you can rotate this secret to a new value. 
+Whenever a notification channel is created, a secret is generated for it. You can have Unstructured generate the secret value, or you can specify the value yourself. Use this secret in your receiver application to verify incoming webhook requests. The secret is write-only and is not returned by the API after creation. If you suspect that the secret has been compromised, rotate it to a new value.
+
+The following Python example shows how to verify an incoming webhook request by using the notification channel secret, request headers, and raw request body.
+
+<Accordion title="Python">
+```python
+import hashlib
+import hmac
+import base64
+import time
+
+
+def verify_webhook(
+    payload: bytes, headers: dict, secret: str, tolerance_seconds: int = 300
+) -> bool:
+    msg_id = headers["webhook-id"]
+    timestamp = headers["webhook-timestamp"]
+    signature_header = headers["webhook-signature"]
+
+    # Reject stale timestamps
+    if abs(time.time() - int(timestamp)) > tolerance_seconds:
+        raise ValueError("Timestamp too old")
+
+    # Use the secret as the signing key
+    secret_bytes = secret.encode("utf-8")
+
+    # Sign: "{msg_id}.{timestamp}.{raw_body}"
+    signed_content = f"{msg_id}.{timestamp}.".encode() + payload
+    expected = base64.b64encode(
+        hmac.new(secret_bytes, signed_content, hashlib.sha256).digest()
+    ).decode()
+
+    # The header may contain multiple space-separated versioned sigs
+    for sig in signature_header.split(" "):
+        version, value = sig.split(",", 1)
+        if version == "v1" and hmac.compare_digest(expected, value):
+            return True
+
+    raise ValueError("Invalid signature") 
+    ```
+  </Accordion>
 
 Whenever a webhook is triggered, the act of Unstructured sending the event data payload is called a 
 _notification_. You can get a count or a list of these notifications. You can also mark them in your Unstructured account as read after 
@@ -114,11 +151,10 @@ In the following examples, replace the following placeholders:
   events to be triggered, add multiple `<event-type>` entries. For the list of 
   available event types, see this article's introductory section.
 - Replace `<description>` with some meaningful description of the notification channel, for your own reference.
-- Optionally, replace `<secret>` with a Base64-encoded string to serve as the secret for the notification channel. If you do not provide a secret, a random secret will be generated for you.
+- Optionally, replace `<secret>` with the signing secret in plain text for the notification channel. If you do not provide a secret, Unstructured generates a random secret for you. The secret must be between 24 and 75 bytes. If you use only ASCII characters, this is equivalent to 24 to 75 characters, because each ASCII character is one byte.
 
 <Warning>
-  The secret is shown in the response payload of this operation. This secret is shown only once. If you forget this secret, 
-  you can get a new, replacement one by [rotating this workspace-scoped notification channel's secret](#rotate-the-secret-for-a-workspace-scoped-notification-channel).
+  The secret is write-only and is not returned by the API after creation. If you need to change it later, update it or [rotate this workspace-scoped notification channel's secret](#rotate-the-secret-for-a-workspace-scoped-notification-channel).
 </Warning>
 
 <AccordionGroup>
@@ -285,6 +321,7 @@ In the following examples, replace the following placeholders:
     events to be triggered, add multiple `<event-type>` entries. For the list of 
     available event types, see this article's introductory section.
   - `<description>`: Some meaningful description of the notification channel, for your own reference.
+  - `<secret>`: A new signing secret in plain text for the notification channel. Omit `secret` to keep the current value. The secret must be between 24 and 75 bytes. If you use only ASCII characters, this is equivalent to 24 to 75 characters, because each ASCII character is one byte.  
   - For `enabled`: Set to true to enable the notification channel, or false to disable it.
 
 <AccordionGroup>
@@ -302,6 +339,7 @@ In the following examples, replace the following placeholders:
              "<event-type>"
            ],
            "description": "<description>",
+           "secret": "<secret>",
            "enabled": "<true|false>"
         }'
         ```
@@ -328,6 +366,7 @@ In the following examples, replace the following placeholders:
                 "<event-type>"
               ],
               "description": "<description>",
+              "secret": "<secret>",
               "enabled": "<true|false>"
             }
             ```
@@ -386,11 +425,10 @@ In the following examples, replace the following placeholders:
   events to be triggered, add multiple `<event-type>` entries. For the list of 
   available event types, see this article's introductory section.
 - Replace `<description>` with some meaningful description of the notification channel, for your own reference.
-- Optionally, replace `<secret>` with a Base64-encoded string to serve as the secret for the notification channel. If you do not provide a secret, a random secret will be generated for you.
+- Optionally, replace `<secret>` with the signing secret in plain text for the notification channel. If you do not provide a secret, Unstructured generates a random secret for you. The secret must be between 24 and 75 bytes. If you use only ASCII characters, this is equivalent to 24 to 75 characters, because each ASCII character is one byte.
 
 <Warning>
-  The secret is shown in the response payload of this operation. This secret is shown only once. If you forget this secret, 
-  you can get a new, replacement one by [rotating this workflow-scoped notification channel's secret](#rotate-the-secret-for-a-workflow-scoped-notification-channel).
+  The secret is write-only and is not returned by the API after creation. If you need to change it later, update it or [rotate this workflow-scoped notification channel's secret](#rotate-the-secret-for-a-workflow-scoped-notification-channel).
 </Warning>
 
 <AccordionGroup>
@@ -570,6 +608,7 @@ In the following examples, replace the following placeholders:
     events to be triggered, add multiple `<event-type>` entries. For the list of 
     available event types, see this article's introductory section.
   - `<description>`: Some meaningful description of the notification channel, for your own reference.
+  - `<secret>`: A new signing secret in plain text for the notification channel. Omit `secret` to keep the current value. The secret must be between 24 and 75 bytes. If you use only ASCII characters, this is equivalent to 24 to 75 characters, because each ASCII character is one byte.
   - For `enabled`: Set to true to enable the notification channel, or false to disable it.
 
 <AccordionGroup>
@@ -587,6 +626,7 @@ In the following examples, replace the following placeholders:
              "<event-type>"
            ],
            "description": "<description>",
+           "secret": "<secret>",
            "enabled": "<true|false>"
         }'
         ```
@@ -613,6 +653,7 @@ In the following examples, replace the following placeholders:
                "<event-type>"
               ],
               "description": "<description>",
+              "secret": "<secret>",
               "enabled": "<true|false>"
             }
             ```
