@@ -28,8 +28,10 @@ one or more of the following:
 - Is scheduled to start running later (programmatically, an event type of `job.scheduled`)
 - Has begun running (`job.in_progress`)
 - Has stopped running (`job.stopped`)
-- Has failed to successfully complete (`job.failed`) - less than 90% of the job's files or data were successfully processed.
-- Has successfully completed (`job.completed`) - 90% or more of the job's files or data were successfully processed.
+- Has failed to initialize  (`job.failed`) -  the job did not process any files.
+- Has completed (`job.completed`) - the job initialized and finished processing. To determine whether all files were processed successfully, get the job's processing details. For more information, see [Get processing details for a job](/api-reference/workflow/overview#get-processing-details-for-a-job).
+
+completed means that the job has initialized and finished it's work but it does not mean all files were successfully processed. User would need to fetch job details after job completes, and look at processed documents count to have the whole context of the job. (I think we should add this information somewhere in the docs)
 
 When a webhook is configured to deliver event-driven notification data payloads from a sender to a receiver, this configuration 
 is called a _notification channel_. For Unstructured webhooks, notification channels can be created and managed at the following levels:
