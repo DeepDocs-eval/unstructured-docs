@@ -31,8 +31,6 @@ one or more of the following:
 - Has failed to initialize  (`job.failed`) -  the job did not process any files.
 - Has completed (`job.completed`) - the job initialized and finished processing. To determine whether all files were processed successfully, get the job's processing details. For more information, see [Get processing details for a job](/api-reference/workflow/overview#get-processing-details-for-a-job).
 
-completed means that the job has initialized and finished it's work but it does not mean all files were successfully processed. User would need to fetch job details after job completes, and look at processed documents count to have the whole context of the job. (I think we should add this information somewhere in the docs)
-
 When a webhook is configured to deliver event-driven notification data payloads from a sender to a receiver, this configuration 
 is called a _notification channel_. For Unstructured webhooks, notification channels can be created and managed at the following levels:
 
@@ -50,9 +48,25 @@ is called a _notification channel_. For Unstructured webhooks, notification chan
   the target workflow in an Unstructured account to trigger the webhook. This can be useful, for example, for emailing a department's data analyst when a long-running job for a specific workflow 
   has completed, allowing them to begin working with the latest output.
 
-Whenever a notification channel is created, a secret is generated for it. You can have Unstructured generate the secret value, or you can specify the value yourself. Use this secret in your receiver application to verify incoming webhook requests. The secret is write-only and is not returned by the API after creation. If you suspect that the secret has been compromised, rotate it to a new value.
+Whenever a webhook is triggered, the act of Unstructured sending the event data payload is called a 
+_notification_. You can get a count or a list of these notifications. You can also mark them in your Unstructured account as read after 
+you have processed them according to your organization's needs. Marking a notification as read can help you keep track of 
+which notifications you have already dealt with and which ones you still need to take action on.
 
-The following Python example shows how to verify an incoming webhook request by using the notification channel secret, request headers, and raw request body.
+<Info>
+  The Unstructured user interface (UI) allows only limited creation, viewing, and management of webhooks, as follows ([learn how](/ui/webhooks)):
+
+  - Webhooks for a personal Unstructured workspace. Each personal Unstructured account has one and only one personal Unstructured workspace.
+  - Webhooks for a workspace within an Unstructured **Business** account.
+
+  You cannot use the Unstructured UI to create, view, or manage notifications or workflow-level webhooks.
+</Info>
+
+## Verify webhook requests 
+
+Your receiver application can verify incoming webhook requests to check that the payload originated from Unstructured and was not tampered with in transit. Use the webhook secret to verify incoming requests. If you suspect that the secret has been compromised, rotate it to a new value.
+
+The following Python example reads the webhook ID, timestamp, and signature from the request headers and checks that the timestamp is within an acceptable time window.  Next, it recomputes the expected HMAC-SHA256 signature from the webhook ID, timestamp, and raw request body using the notification channel secret. It then compares the computed signature to the versioned signature in the request header. If the values match, the request can be trusted as originating from Unstructured and as not having been tampered with in transit.
 
 <Accordion title="Python">
 ```python
@@ -92,19 +106,9 @@ def verify_webhook(
     ```
   </Accordion>
 
-Whenever a webhook is triggered, the act of Unstructured sending the event data payload is called a 
-_notification_. You can get a count or a list of these notifications. You can also mark them in your Unstructured account as read after 
-you have processed them according to your organization's needs. Marking a notification as read can help you keep track of 
-which notifications you have already dealt with and which ones you still need to take action on.
-
-<Info>
-  The Unstructured user interface (UI) allows only limited creation, viewing, and management of webhooks, as follows ([learn how](/ui/webhooks)):
-
-  - Webhooks for a personal Unstructured workspace. Each personal Unstructured account has one and only one personal Unstructured workspace.
-  - Webhooks for a workspace within an Unstructured **Business** account.
-
-  You cannot use the Unstructured UI to create, view, or manage notifications or workflow-level webhooks.
-</Info>
+<Warning>
+Use the raw request body exactly as received, not a re-serialized JSON payload. Using a re-serialized payload can cause signature verification to fail.
+</Warning>
 
 ## Requirements
 
@@ -152,10 +156,10 @@ In the following examples, replace the following placeholders:
   events to be triggered, add multiple `<event-type>` entries. For the list of 
   available event types, see this article's introductory section.
 - Replace `<description>` with some meaningful description of the notification channel, for your own reference.
-- Optionally, replace `<secret>` with the signing secret in plain text for the notification channel. If you do not provide a secret, Unstructured generates a random secret for you. The secret must be between 24 and 75 bytes (24 to 75 ASCII characters).
+- Optionally, replace `<secret>`  with a strong, random signing secret in plain text. Use this secret to [verify incoming webhook requests](#verify-webhook-requests). If you do not provide a secret, you cannot use secret-based verification for incoming webhook requests. The secret must be between 24 and 75 bytes (24 to 75 ASCII characters).
 
 <Warning>
-  The secret is write-only and is not returned by the API after creation. If you need to change it later, update it or [rotate this workspace-scoped notification channel's secret](#rotate-the-secret-for-a-workspace-scoped-notification-channel).
+  The secret is write-only and is not returned by the API after creation. If you need to change it later [update it](#update-a-workspace-scoped-notification-channel).
 </Warning>
 
 <AccordionGroup>
@@ -264,38 +268,6 @@ To get this ID, see [List all workspace-scoped notification channels](#list-all-
 
            ```text
            {{UNSTRUCTURED_API_URL}}/notifications/channels/<channel-id>
-           ```
-
-        3. On the **Headers** tab, enter the following header:
-
-           - **Key**: `unstructured-api-key`, **Value**: `{{UNSTRUCTURED_API_KEY}}`
-
-        4. Click **Send**.
-    </Accordion>
-</AccordionGroup>
-
-## Rotate the secret for a workspace-scoped notification channel
-
-To _rotate_ (generate a new, replacement) secret for a notification channel that is used for all corresponding events across a workspace, 
-call the `POST /notifications/channels/<channel-id>/secret/rotate` operation.
-
-In the following examples, replace `<channel-id>` with the workspace-scoped notification channel's unique ID. 
-To get this ID, see [List all workspace-scoped notification channels](#list-all-workspace-scoped-notification-channels).
-
-<AccordionGroup>
-    <Accordion title="curl">
-        ```bash
-        curl --request 'POST' --location \
-        "$UNSTRUCTURED_API_URL/notifications/channels/<channel-id>/secret/rotate" \
-        --header "unstructured-api-key: $UNSTRUCTURED_API_KEY"
-        ```
-    </Accordion>
-    <Accordion title="Postman">
-        1. In the method drop-down list, select **POST**.
-        2. In the address box, enter the following URL:
-
-           ```text
-           {{UNSTRUCTURED_API_URL}}/notifications/channels/<channel-id>/secret/rotate
            ```
 
         3. On the **Headers** tab, enter the following header:
@@ -426,10 +398,10 @@ In the following examples, replace the following placeholders:
   events to be triggered, add multiple `<event-type>` entries. For the list of 
   available event types, see this article's introductory section.
 - Replace `<description>` with some meaningful description of the notification channel, for your own reference.
-- Optionally, replace `<secret>` with the signing secret in plain text for the notification channel. If you do not provide a secret, Unstructured generates a random secret for you. The secret must be between 24 and 75 bytes (24 to 75 ASCII characters).
+- Optionally, replace `<secret>` with a strong, random signing secret in plain text. Use this secret to [verify incoming webhook requests](#verify-webhook-requests). If you do not provide a secret, you cannot use secret-based verification for incoming webhook requests. The secret must be between 24 and 75 bytes (24 to 75 ASCII characters).
 
 <Warning>
-  The secret is write-only and is not returned by the API after creation. If you need to change it later, update it or [rotate this workflow-scoped notification channel's secret](#rotate-the-secret-for-a-workflow-scoped-notification-channel).
+  The secret is write-only and is not returned by the API after creation. If you need to change it later [update it](#update-a-workflow-scoped-notification-channel).
 </Warning>
 
 <AccordionGroup>
@@ -545,42 +517,6 @@ In the following examples, replace the following placeholders:
 
            ```text
            {{UNSTRUCTURED_API_URL}}/workflows/<workflow-id>/notifications/channels/<channel-id>
-           ```
-
-        3. On the **Headers** tab, enter the following header:
-
-           - **Key**: `unstructured-api-key`, **Value**: `{{UNSTRUCTURED_API_KEY}}`
-
-        4. Click **Send**.
-    </Accordion>
-</AccordionGroup>
-
-## Rotate the secret for a workflow-scoped notification channel
-
-To _rotate_ (generate a new, replacement) secret for a notification channel that is used only for a specific workflow, 
-call the `POST /workflows/<workflow-id>/notifications/channels/<channel-id>/secret/rotate` operation.
-
-In the following examples, replace the following placeholders:
-
-- Replace `<workflow-id>` with the workflow's unique ID. 
-  To get this ID, see [List workflows](/api-reference/workflow/overview#list-workflows).
-- Replace `<channel-id>` with the workspace-scoped notification channel's unique ID. 
-  To get this ID, see [List all workflow-scoped notification channels](#list-all-workflow-scoped-notification-channels).
-
-<AccordionGroup>
-    <Accordion title="curl">
-        ```bash
-        curl --request 'POST' --location \
-        "$UNSTRUCTURED_API_URL/workflows/<workflow-id>/notifications/channels/<channel-id>/secret/rotate" \
-        --header "unstructured-api-key: $UNSTRUCTURED_API_KEY"
-        ```
-    </Accordion>
-    <Accordion title="Postman">
-        1. In the method drop-down list, select **POST**.
-        2. In the address box, enter the following URL:
-
-           ```text
-           {{UNSTRUCTURED_API_URL}}/workflows/<workflow-id>/notifications/channels/<channel-id>/secret/rotate
            ```
 
         3. On the **Headers** tab, enter the following header:

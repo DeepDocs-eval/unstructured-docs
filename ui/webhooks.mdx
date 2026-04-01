@@ -36,7 +36,7 @@ You can use the Unstructured user interface (UI) to create and manage webhooks i
 to trigger the webhook. This can be useful, for example, for routing pager requests to a team of on-call engineers in an IT operations center 
 whenever any job fails within the given scope.
 
-When you create a webhook in the UI, you can optionally provide a signing secret. If you do not provide one, Unstructured generates a random secret for you. You can later change the secret in the webhook settings pane, but you cannot view the existing secret value.
+When you create a webhook in the UI, you can optionally provide a signing secret to [verify incoming webhook requests](/api-reference/webhooks#verify-webhook-requests).  If you do not provide a secret, you cannot use secret-based verification for incoming webhook requests. The secret is write-only and is not returned by the API after creation.
 
 ## View your personal account webhooks
 
@@ -72,7 +72,8 @@ resource that triggers the event, do the following:
 3. Click **Add Webhook +**.
 4. In the **Webhook Setup** dialog, for **Webhook URL**, enter the target receiver's webhook URL.
 5. Optionally, for **Description**, enter a meaningful description of the webhook, for your own reference.
-6. Optionally, for **Secret**, enter a signing secret. If you do not provide one, Unstructured generates a random secret for you.
+6. Optionally, for **Secret**, enter a strong, random signing secret in plain text. Use this secret to [verify incoming webhook requests](/api-reference/webhooks#verify-webhook-requests). If you do not provide a secret, you cannot use secret-based verification for incoming webhook requests. The secret must be between 24 and 75 bytes (24 to 75 ASCII characters).
+
 7. For **Select Events**, click one or more of the available events that you want Unstructured to send notifications for. 
    For more information about the list of available events, see this article's introductory section.
 8. Click **Save Webhook**.
@@ -108,21 +109,17 @@ To delete an existing webhook, do the following:
 
 The webhook is deleted, and event data will no longer be sent through this webhook.
 
-## Unstructured API support for webhooks
+## Unstructured UI and API support for webhooks: _workspace_ and _workflow_
 
-The Unstructured user interface (UI) only supports the creation and management of webhooks in your Unstructured personal account, or for a 
-workspace within an Unstructured **Business** account.
+The Unstructured user interface (UI) supports creating and managing webhooks in your Unstructured personal account, or for a _workspace_ within an Unstructured **Business** account.
 
-You can also use the [Unstructured API](/api-reference/overview) to do this, as well as:
+This page describes _workspace-scoped_ webhook actions that you can perform in the UI. You can also use the [Unstructured API](/api-reference/webhooks) to perform these same actions programmatically. In addition, the API supports _workflow-scoped_ webhooks.
 
-- Create and manage webhooks at the workflow level, known as a _workflow-scoped notification channel_. This allows any job that is associated only with 
-  the target workflow to trigger the webhook. This can be useful, for example, for emailing a department's data analyst when a long-running job for a specific workflow 
-  has completed, allowing them to begin working with the latest output. 
-- Create and rotate the secret for a webhook. You can optionally provide a secret when you create a webhook. If you do not provide one, Unstructured generates a random secret for you. You can also change the secret by using the Unstructured API. Use the secret to verify that a webhook originated from Unstructured. If you suspect that the secret has been compromised, rotate it to a new value.
-- Manage notifications. Whenever a webhook is triggered, the act of Unstructured sending the event data payload is called a 
-  _notification_. You can get a count or a list of these notifications. You can also mark them as read after 
-  you have processed them according to your organization's needs. Marking a notification as read can help you keep track of 
-  which notifications you have already dealt with and which ones you still need to take action on.
+The API also offers the following:
+
+- Create and manage webhooks at the workflow level, known as a _workflow-scoped notification channel_. This allows any job that is associated only with the target workflow to trigger the webhook. This can be useful, for example, for emailing a department's data analyst when a long-running job for a specific workflow has completed, allowing them to begin working with the latest output.
+- Manage notifications for both workspace and workflow. Whenever a webhook is triggered, the act of Unstructured sending the event data payload is called a _notification_. You can get a count or a list of these notifications. You can also mark them as read after you have processed them according to your organization's needs. Marking a notification as read can help you keep track of which notifications you have already dealt with and which ones you still need to take action on.
+- Use the same secret-management flow described earlier for _workspace-scoped_ webhooks, including optionally providing a secret at creation time and rotating it later through the update endpoint.
 
 [Learn more](/api-reference/webhooks).
 
