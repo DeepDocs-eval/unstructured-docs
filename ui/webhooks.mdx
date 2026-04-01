@@ -119,7 +119,7 @@ The API also offers the following:
 
 - Create and manage webhooks at the workflow level, known as a _workflow-scoped notification channel_. This allows any job that is associated only with the target workflow to trigger the webhook. This can be useful, for example, for emailing a department's data analyst when a long-running job for a specific workflow has completed, allowing them to begin working with the latest output.
 - Manage notifications for both workspace and workflow. Whenever a webhook is triggered, the act of Unstructured sending the event data payload is called a _notification_. You can get a count or a list of these notifications. You can also mark them as read after you have processed them according to your organization's needs. Marking a notification as read can help you keep track of which notifications you have already dealt with and which ones you still need to take action on.
-- Use the same secret-management flow described earlier for _workspace-scoped_ webhooks, including optionally providing a secret at creation time and rotating it later through the update endpoint.
+- Use the same secret-management flow described earlier for _workflow-scoped_ webhooks, including optionally providing a secret at creation time and rotating it later through the update endpoint.
 
 [Learn more](/api-reference/webhooks).
 
