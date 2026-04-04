@@ -16,7 +16,7 @@ level.
 **Does traffic ever traverse the public internet?**
 
 By default, dedicated instances block public ingress and egress.
-When private connectivity is enabled, traffic between the Customer
+When private connectivity is enabled, traffic between the customer
 environment and Unstructured stays on cloud-provider private
 networking. Public ingress or egress can be enabled on request for
 specific use cases. For more information, see [Network access
@@ -35,10 +35,10 @@ Yes. Data is encrypted in the following ways:
 
 **Can Unstructured access my data?**
 
-Unstructured personnel do not access Customer data as part of normal
-operations. Access to Customer data sources is explicitly configured,
+Unstructured personnel do not access customer data as part of normal
+operations. Access to customer data sources is explicitly configured,
 limited to the minimum permissions required, and governed by
-Customer-controlled IAM, RBAC, and resource policies. Any exceptional
+customer-controlled IAM, RBAC, and resource policies. Any exceptional
 access, such as for troubleshooting, is controlled and audited.
 
 **Is customer data used to train models?**
@@ -51,7 +51,7 @@ train models.
 - Customers manage user access to the Unstructured UI and APIs.
 - Network access can be restricted by using private endpoints,
   security groups, and firewall rules.
-- DNS resolution can be kept private and scoped to Customer networks.
+- DNS resolution can be kept private and scoped to customer networks.
 
 **What does private connectivity protect against?**
 
@@ -69,7 +69,7 @@ Private connectivity does not protect against:
 
 **How long is customer data retained?**
 
-Unstructured does not store Customer data long-term. Customer
+Unstructured does not store customer data long-term. Customer
 artifacts are used ephemerally during workflow execution and removed
 upon completion or failure. Transformed data is written to the
 configured destination. The data that persists in the Unstructured

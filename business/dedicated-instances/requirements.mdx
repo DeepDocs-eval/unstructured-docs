@@ -41,20 +41,20 @@ Contact your Unstructured account representative for the current list of support
 
 **AWS requirements:**
 - VPC with private subnets
-- Network Load Balancer for connections into the Customer environment
+- Network Load Balancer for connections into the customer environment
 - IAM permissions to create VPC endpoints, security groups, and Route 53 records
 
 **Azure requirements:**
 - Virtual network with subnets configured for private endpoints
 - Private endpoint network policies disabled on target subnets
-- Standard Load Balancer for connections into the Customer environment
+- Standard Load Balancer for connections into the customer environment
 
 ## DNS requirements
 
 Private connectivity requires DNS configuration to route traffic through private endpoints:
 
 - **AWS:** Route 53 Private Hosted Zone, and on-premises DNS forwarding if needed
-- **Azure:** Azure Private DNS Zone linked to the Customer VNet
+- **Azure:** Azure Private DNS Zone linked to the customer VNet
 - **Both:** CNAME records that point to the private endpoint
 
 Unstructured provides the DNS name in the format `<company>.privatelink.unstructuredapp.io`.
