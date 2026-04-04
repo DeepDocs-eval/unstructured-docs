@@ -733,6 +733,10 @@
   },
   "redirects": [
     {
+      "source": "/business/azure/dns-privatelink",
+      "destination": "/business/azure/azure-privatelink/dns-privatelink"
+    },
+    {
       "source": "/business/aws/dedicated-instance-privatelink",
       "destination": "/business/aws/aws-privatelink/onboarding-di-pl"
     },

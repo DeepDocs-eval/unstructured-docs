@@ -3,7 +3,9 @@ title: DNS configuration for PrivateLink access
 sidebarTitle: DNS configuration
 ---
 
-To access the dedicated instance over PrivateLink, DNS must be configured so the service hostname resolves to the private IPs of the VPC Endpoint. Clients must connect using the exact service hostname provided, because TLS is terminated using a provider-managed certificate.
+To access the dedicated instance over PrivateLink, you must configure DNS so the service hostname resolves to the private IPs of the VPC Endpoint.
+
+Clients must connect using the exact service hostname provided, because TLS is terminated using a provider-managed certificate.
 
 ### Option 1: Enable Private DNS on the VPC Endpoint (Recommended)
 
