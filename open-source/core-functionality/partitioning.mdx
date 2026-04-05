@@ -10,12 +10,12 @@ The following table shows the document types the `unstructured` library currentl
 
 | Document Type                                                             | Partition Function | Strategies                           | Table Support | Options                                                                                      |
 |---------------------------------------------------------------------------|--------------------|--------------------------------------|---------------|----------------------------------------------------------------------------------------------|
-| CSV Files (.csv)                                                          | partition_csv      | N/A                                  | Yes           | None                                                                                         |
+| CSV Files (.csv)                                                          | partition_csv      | N/A                                  | Yes           | Encoding; Include Header; Infer Table Structure                          |
 | E-mails (.eml)                                                            | partition_email    | N/A                                  | No            | Encoding; Include Headers; Max Partition; Process Attachments                                |
 | E-mails (.msg)                                                            | partition_msg      | N/A                                  | No            | Encoding; Max Partition; Process Attachments                                                 |
 | EPubs (.epub)                                                             | partition_epub     | N/A                                  | Yes           | Include Page Breaks                                                                          |
-| Excel Documents (.xlsx/.xls)                                              | partition_xlsx     | N/A                                  | Yes           | None                                                                                         |
-| HTML Pages (.html/.htm)                                                   | partition_html     | N/A                                  | No            | Encoding; Include Page Breaks                                                                |
+| Excel Documents (.xlsx/.xls)                                              | partition_xlsx     | N/A                                  | Yes           | Find Subtable; Include Header; Infer Table Structure                     |
+| HTML Pages (.html/.htm)                                                   | partition_html     | N/A                                  | No            | Encoding                                                                 |
 | Images (.png/.jpg/.jpeg/.tiff/.bmp/.heic)                                 | partition_image    | “auto”, “hi_res”, “ocr_only”         | Yes           | Encoding; Include Page Breaks; Infer Table Structure; OCR Languages, Strategy                |
 | Markdown (.md)                                                            | partition_md       | N/A                                  | Yes           | Include Page Breaks                                                                          |
 | Org Mode (.org)                                                           | partition_org      | N/A                                  | Yes           | Include Page Breaks                                                                          |
@@ -189,7 +189,7 @@ For more information about the `partition_docx` function, you can check the [sou
 
 ## `partition_email`
 
-The `partition_email` function partitions `.eml` documents and works with exports from email clients such as Microsoft Outlook and Gmail. The `partition_email` takes a filename, file-like object, or raw text as input and produces a list of document `Element` objects as output. Also `content_source` can be set to `text/html` (default) or `text/plain` to process the html or plain text version of the email, respectively. In order for `partition_email` to return the header information as elements, `include_headers` must be set to `True`. Header information is captured in element metadata regardless of the `include_headers` setting.
+The `partition_email` function partitions `.eml` documents and works with exports from email clients such as Microsoft Outlook and Gmail. The `partition_email` takes a filename or file-like object as input and produces a list of document `Element` objects as output. `content_source` can be set to `text/html` (default) or `text/plain` to process the html or plain text version of the email, respectively. Header information is captured in element metadata.
 
 | Header     | Element type | Metadata name    |
 | ---        | ---          | ---              |
@@ -207,23 +207,17 @@ Examples:
 ```python
 from unstructured.partition.email import partition_email
 
+
 elements = partition_email(filename="example-docs/eml/fake-email.eml")
 
-with open("example-docs/eml/fake-email.eml", "r") as f:
+with open("example-docs/eml/fake-email.eml", "rb") as f:
     elements = partition_email(file=f)
 
-with open("example-docs/eml/fake-email.eml", "r") as f:
-    text = f.read()
-elements = partition_email(text=text)
 
-with open("example-docs/eml/fake-email.eml", "r") as f:
-    text = f.read()
-elements = partition_email(text=text, content_source="text/plain")
+elements = partition_email(filename="example-docs/eml/fake-email.eml", content_source="text/plain")
 
-with open("example-docs/eml/fake-email.eml", "r") as f:
-    text = f.read()
-elements = partition_email(text=text, include_headers=True)
-
+filename = "example-docs/eml/fake-email-attachment.eml"
+elements = partition_email(filename=filename, process_attachments=True)
 ```
 
 
@@ -245,7 +239,7 @@ For more information about the `partition_email` function, you can check the [so
 
 ## `partition_epub`
 
-The `partition_epub` function processes e-books in EPUB3 format. The function first converts the document to HTML using `pandocs` and then calls `partition_html`. You’ll need [pandocs](https://pandoc.org/installing.html) installed on your system to use `partition_epub`.
+The `partition_epub` function processes e-books in EPUB3 format. The function first converts the document to HTML using `pandoc` and then calls `partition_html`. You’ll need [pandoc](https://pandoc.org/installing.html) installed on your system to use `partition_epub`.
 
 Examples:
 
@@ -270,14 +264,12 @@ from unstructured.partition.html import partition_html
 
 elements = partition_html(filename="example-docs/example-10k.html")
 
-with open("example-docs/example-10k.html", "r") as f:
+with open("example-docs/example-10k.html", "rb") as f:
     elements = partition_html(file=f)
 
 with open("example-docs/example-10k.html", "r") as f:
     text = f.read()
 elements = partition_html(text=text)
-
-```
 
 
 The following illustrates fetching a url and partitioning the response content. The `ssl_verify` kwarg controls whether or not SSL verification is enabled for the HTTP request. By default it is on. Use `ssl_verify=False` to disable SSL verification in the request.
@@ -371,11 +363,7 @@ elements = partition_msg(filename="example-docs/fake-email.msg")
 ```
 
 
-`partition_msg` includes a `max_partition` parameter that indicates the maximum character length for a document element. This parameter only applies if `"text/plain"` is selected as the `content_source`. The default value is `1500`, which roughly corresponds to the average character length for a paragraph. You can disable `max_partition` by setting it to `None`.
-
-You can optionally partition e-mail attachments by setting `process_attachments=True`. The following is an example of what the workflow looks like:
-
-```python
+`partition_msg` includes a `max_partition` parameter that indicates the maximum character length for a document element. The default value is `1500`, which roughly corresponds to the average character length for a paragraph. You can disable `max_partition` by setting it to `None`.
 from unstructured.partition.msg import partition_msg
 
 filename = "example-docs/fake-email-attachment.msg"
@@ -573,7 +561,7 @@ The `partition_rst` function processes ReStructured Text (`.rst`) documents. The
 
 Examples:
 
-```
+```python
 from unstructured.partition.rst import partition_rst
 
 elements = partition_rst(filename="example-docs/README.rst")
@@ -609,14 +597,12 @@ Examples:
 from unstructured.partition.text import partition_text
 
 elements = partition_text(filename="example-docs/fake-text.txt")
-
-with open("example-docs/fake-text.txt", "r") as f:
+with open("example-docs/fake-text.txt", "rb") as f:
   elements = partition_text(file=f)
 
 with open("example-docs/fake-text.txt", "r") as f:
   text = f.read()
 elements = partition_text(text=text)
-
 ```
 
 

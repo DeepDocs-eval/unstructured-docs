@@ -95,7 +95,7 @@ Examples:
 from unstructured.cleaners.core import clean
 
 # Returns "an excellent point!"
-clean("● An excellent point!", bullets=True, lowercase=True)
+# Returns "an excellent point!"
 
 # Returns "ITEM 1A: RISK FACTORS"
 clean("ITEM 1A:     RISK-FACTORS", extra_whitespace=True, dashes=True)
@@ -319,10 +319,10 @@ Examples:
 from unstructured.cleaners.core import replace_unicode_quotes
 
 # Returns "“A lovely quote!”"
-replace_unicode_characters("\x93A lovely quote!\x94")
+replace_unicode_quotes("\x93A lovely quote!\x94")
 
-# Returns ""‘A lovely quote!’"
-replace_unicode_characters("\x91A lovely quote!\x92")
+# Returns "‘A lovely quote!’"
+replace_unicode_quotes("\x91A lovely quote!\x92")
 
 ```
 
